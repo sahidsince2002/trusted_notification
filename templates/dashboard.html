@@ -1,0 +1,424 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Trusted Notification Delivery Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f5f7fa;
+      display: flex;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 240px;
+      height: 100vh;
+      background: #1d3557;
+      color: white;
+      padding-top: 20px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      box-shadow: 3px 0 10px rgba(0,0,0,0.2);
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 14px 20px;
+      text-decoration: none;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      border-left: 4px solid transparent;
+      transition: 0.25s ease;
+    }
+
+    .sidebar a:hover {
+      background: #457b9d;
+    }
+
+    .active-link {
+      background: #457b9d !important;
+      border-left: 4px solid #a8dadc;
+    }
+
+    /* MAIN CONTENT */
+    .content {
+      margin-left: 260px;
+      padding: 20px;
+      width: calc(100% - 260px);
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      margin-bottom: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    /* KPI SECTION */
+    .kpi-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .kpi-card {
+      flex: 1;
+      min-width: 160px;
+      background: #f1f4f8;
+      padding: 18px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .kpi-card h3 {
+      margin: 0;
+      font-size: 26px;
+      color: #1d3557;
+    }
+
+    .kpi-card p {
+      margin: 5px 0 0;
+      font-size: 14px;
+      color: #555;
+    }
+
+    /* FORM DESIGN */
+    .form-row {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .input-box {
+      flex: 1;
+      min-width: 240px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input-box label {
+      font-weight: 600;
+      color: #1d3557;
+      margin-bottom: 6px;
+    }
+
+    .input-box input,
+    .input-box select,
+    .input-box textarea {
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 2px solid #d0d6e2;
+      background: white;
+      font-size: 15px;
+      transition: 0.25s ease;
+      outline: none;
+    }
+
+    .input-box input:focus,
+    .input-box select:focus,
+    .input-box textarea:focus {
+      border-color: #457b9d;
+      box-shadow: 0 0 0 3px rgba(69,123,157,0.2);
+    }
+
+    /* BUTTON */
+    .send-btn {
+      background: linear-gradient(90deg, #1d3557, #457b9d);
+      color: white;
+      padding: 14px 26px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 12px;
+      width: 200px;
+      transition: 0.25s ease;
+    }
+
+    .send-btn:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(90deg, #16324f, #3b6f8b);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+    }
+
+    .send-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* LOG TABLE */
+    .log-table { width: 100%; border-collapse: collapse; }
+    .log-table th, .log-table td { padding: 10px; border-bottom: 1px solid #ddd; }
+
+    .log-success { background: #e8f9e9; border-left: 5px solid #28a745; }
+    .log-retry { background: #fff7d1; border-left: 5px solid #f1c40f; }
+    .log-fail { background: #ffe5e5; border-left: 5px solid #e74c3c; }
+
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    .badge-delivered { background: #28a745; color: white; }
+    .badge-unavailable { background: #f1c40f; color: white; }
+    .badge-failed { background: #e74c3c; color: white; }
+    .badge-spam { background: #6a040f; color: white; }
+
+    /* FILTERS */
+    .filter-group {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-box {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .analytics-row {
+      display: flex;
+      gap: 30px;
+    }
+
+    .chart-col { flex: 1; }
+
+    .page { display: none; }
+  </style>
+</head>
+
+<body>
+
+<!-------------------------------------
+        SIDEBAR
+-------------------------------------->
+<div class="sidebar">
+  <h2>Trusted Notification</h2>
+
+  <a id="link_dashboard" onclick="showPage('page_dashboard')">Dashboard</a>
+  <a id="link_send" onclick="showPage('page_send')">Send Notification</a>
+  <a id="link_policy" onclick="showPage('page_policy')">Policy Manager</a>
+  <a id="link_audit" onclick="showPage('page_audit')">Audit Trail</a>
+</div>
+
+
+<!-------------------------------------
+        MAIN CONTENT
+-------------------------------------->
+<div class="content">
+
+  <!-------------------------------------
+          DASHBOARD PAGE
+  -------------------------------------->
+  <div class="page" id="page_dashboard">
+
+    <div class="card">
+      <h2>System Analytics</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card"><h3 id="kpi_total">0</h3><p>Total</p></div>
+        <div class="kpi-card"><h3 id="kpi_delivered">0</h3><p>Delivered</p></div>
+        <div class="kpi-card"><h3 id="kpi_failed">0</h3><p>Failed</p></div>
+        <div class="kpi-card"><h3 id="kpi_spam">0</h3><p>Spam Blocked</p></div>
+        <div class="kpi-card"><h3 id="kpi_success_rate">0%</h3><p>Success Rate</p></div>
+      </div>
+    </div>
+
+    <div class="card analytics-row">
+      <div class="chart-col">
+        <h2>Channel Usage</h2>
+        <canvas id="channelChart"></canvas>
+      </div>
+
+      <div class="chart-col">
+        <h2>Message Volume</h2>
+        <canvas id="messageVolumeChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Status Breakdown</h2>
+      <canvas id="statusChart"></canvas>
+    </div>
+
+  </div>
+
+
+  <!-------------------------------------
+        SEND PAGE
+  -------------------------------------->
+  <div class="page" id="page_send">
+    <div class="card">
+      <h2>Send Notification</h2>
+
+      <div class="form-row">
+        <div class="input-box">
+          <label>Event Type</label>
+          <select id="event_type"></select>
+        </div>
+
+        <div class="input-box">
+          <label>Phone Number</label>
+          <input id="phone" placeholder="Enter mobile number">
+        </div>
+
+        <div class="input-box">
+          <label>Email</label>
+          <input id="email" placeholder="user@email.com">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="input-box">
+          <label>Device Token</label>
+          <input id="device" placeholder="Device token">
+        </div>
+
+        <div class="input-box">
+          <label>Message</label>
+          <textarea id="message" rows="3" placeholder="Write your message..."></textarea>
+        </div>
+      </div>
+
+      <button class="send-btn" onclick="sendEvent()">Send Notification</button>
+
+      <pre id="send_result"
+           style="background:#f7f7f7; padding:12px; border-radius:8px; margin-top:15px;"></pre>
+    </div>
+
+
+    <!-------------------------------------
+            FILTERS
+    -------------------------------------->
+    <div class="card">
+      <h2>Filters</h2>
+      <div class="filter-group">
+        <div class="filter-box">
+          <label>Search</label>
+          <input id="filter_search">
+        </div>
+
+        <div class="filter-box">
+          <label>Channel</label>
+          <select id="filter_channel">
+            <option value="ALL">All</option>
+            <option value="SMS">SMS</option>
+            <option value="EMAIL">Email</option>
+            <option value="PUSH">Push</option>
+            <option value="SPAM_FILTER">Spam Filter</option>
+          </select>
+        </div>
+
+        <div class="filter-box">
+          <label>Status</label>
+          <select id="filter_status">
+            <option value="ALL">All</option>
+            <option value="DELIVERED">Delivered</option>
+            <option value="UNDELIVERED">Undelivered</option>
+            <option value="PERMANENT_FAILURE">Permanent Failure</option>
+            <option value="SPAM_BLOCKED">Spam Blocked</option>
+          </select>
+        </div>
+
+        <div class="filter-box">
+          <label>Date</label>
+          <select id="filter_date">
+            <option value="ALL">All</option>
+            <option value="1H">Last 1 hour</option>
+            <option value="24H">Last 24 hours</option>
+            <option value="7D">Last 7 days</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+
+    <!-------------------------------------
+            LOGS TABLE
+    -------------------------------------->
+    <div class="card">
+      <h2>Delivery Logs</h2>
+      <button id="clearLogsBtn" class="send-btn" style="width:150px; background:#e63946; margin-bottom:10px;">
+        Clear Logs
+      </button>
+      <div id="logs_grouped" style="margin-top:20px;">Loading…</div>
+    </div>
+
+  </div>
+
+
+  <!-------------------------------------
+          POLICY MANAGER
+  -------------------------------------->
+  <div class="page" id="page_policy">
+    <div class="card">
+      <h2>Policy Manager</h2>
+      <div id="policy_list">Loading policies…</div>
+    </div>
+  </div>
+
+
+  <!-------------------------------------
+          AUDIT TRAIL
+  -------------------------------------->
+  <div class="page" id="page_audit">
+    <div class="card">
+      <h2>Audit Trail</h2>
+      <div id="audit_logs">Loading audit trail…</div>
+    </div>
+  </div>
+
+</div>
+
+<!-------------------------------------
+      SCRIPTS
+-------------------------------------->
+<script src="/static/app.js"></script>
+
+<script>
+function showPage(pageId) {
+    document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+    document.getElementById(pageId).style.display = "block";
+
+    document.querySelectorAll(".sidebar a").forEach(a => a.classList.remove("active-link"));
+
+    const key = pageId.split("_")[1];
+    document.getElementById("link_" + key).classList.add("active-link");
+
+    if (pageId === "page_dashboard") loadAnalytics();
+    if (pageId === "page_send") loadGroupedLogs();
+    if (pageId === "page_policy") loadPolicyManager();
+    if (pageId === "page_audit") loadAuditTrail();
+}
+
+// default
+showPage("page_send");
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    loadEventTypes();
+});
+</script>
+
+
+</body>
+</html>
