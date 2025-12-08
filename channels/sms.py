@@ -1,19 +1,18 @@
-import time
-import random
+import time, random
 
 class SMSProviderMock:
     def __init__(self, reliability=0.95, avg_latency=0.4):
         self.reliability = reliability
         self.avg_latency = avg_latency
 
-    def send(self, to, template, metadata):
+    def send(self, to, message, metadata):
         time.sleep(self.avg_latency * (0.5 + random.random()))
 
-        if str(to).endswith("0000"):
+        if not to or str(to).endswith("0000"):
             return {"status": "PERMANENT_FAILURE", "code": "INVALID_NUMBER"}
 
         if random.random() < self.reliability:
-            return {"status": "DELIVERED", "message_id": str(random.randint(10000,99999))}
+            return {"status": "DELIVERED"}
 
         return {"status": "UNDELIVERED", "code": "TEMP_ERROR"}
 
