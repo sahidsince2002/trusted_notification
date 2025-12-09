@@ -50,48 +50,27 @@ Duplicate requests (same idempotency key) return the original event ID.
 The web dashboard includes:
 KPIs: total, delivered, failed, spam, success rate
 Charts: channel usage, message volume, status breakdown
+
+
+https://github.com/user-attachments/assets/0608c81b-daf7-4e33-82f4-70c2f45fe47e
+
+
+
+https://github.com/user-attachments/assets/9c5da074-7ad3-44bb-8f51-bbeab55088de
+
+
 Filters: date, status, channel, search
+<img width="1919" height="874" alt="Screenshot 2025-12-10 015523" src="https://github.com/user-attachments/assets/025b8b88-4914-4bc6-bcb3-c01d4cd84d90" />
+
 Delivery Logs: complete attempt history
+<img width="1623" height="848" alt="Screenshot 2025-12-10 015602" src="https://github.com/user-attachments/assets/aa995d82-d77d-4496-94a5-bc8ca133df82" />
+
 Policy Manager: rendered from system rules
+<img width="1650" height="530" alt="Screenshot 2025-12-09 235015" src="https://github.com/user-attachments/assets/f8aaf8a3-d417-4b67-8bcd-482d7250ccd8" />
+
 Audit Trail: admin-level traceability
 Built with HTML + CSS + JavaScript + Chart.js.
 
-
-
-https://github.com/user-attachments/assets/cbeeff7f-c653-4705-a0fe-961495a88de9
-
-
-
-https://github.com/user-attachments/assets/448f9699-baab-44af-ba35-4512c4e1f370
-
-
-
-
-📚 File Structure
-
-trusted_notification/
-│
-├── app.py                # Flask server
-├── notifications.py      # Core notification engine
-├── rules_engine.py       # Policy manager
-├── workers.py            # Provider simulation engine
-├── spam_filter.py        # Spam logic
-├── db.py                 # SQLite event/log storage
-├── utils.py              # Helper utilities
-│
-├── channels/             # Channel providers
-│   ├── sms.py
-│   ├── email.py
-│   ├── push.py
-│   └── whatsapp.py
-│
-├── static/
-│   └── app.js            # Dashboard logic + charts + filters
-│
-├── templates/
-│   └── dash.html         # Complete dashboard UI
-│
-└── README.md
 
 🚀 Run Locally
 git clone <repo_url>
@@ -143,3 +122,8 @@ Realistic provider behavior using probability
 Interactive dashboard for monitoring
 Cleanly separated backend logic
 Enterprise-style design for system reliability
+
+📄License
+
+Made by Sahid Ahmed
+Linkedin: https://www.linkedin.com/in/sahid-ahmed/
