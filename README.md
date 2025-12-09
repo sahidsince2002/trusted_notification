@@ -56,6 +56,17 @@ Policy Manager: rendered from system rules
 Audit Trail: admin-level traceability
 Built with HTML + CSS + JavaScript + Chart.js.
 
+
+
+https://github.com/user-attachments/assets/cbeeff7f-c653-4705-a0fe-961495a88de9
+
+
+
+https://github.com/user-attachments/assets/448f9699-baab-44af-ba35-4512c4e1f370
+
+
+
+
 📚 File Structure
 
 trusted_notification/
